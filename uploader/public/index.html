@@ -14,21 +14,25 @@
 		    socket.on('percentage', function (percentage) {
 					showUploadPercentage(percentage);
 		    });
-		    socket.on('uploaded_file', function (filePath) {
-					showUploadFilePath(filePath);
+		    socket.on('uploaded_file', function (file) {
+					showUploadFilePath(file);
 		    });
 		  });
 			document.getElementById("form_upload").onsubmit = function(){
 				showUploadPercentage(0);
-				showUploadFilePath('');
+				showUploadFilePath();
 				return true;
 			}
 			var showUploadPercentage = function(percentage){
 				document.getElementById("upload_percentage").innerText = percentage + "%";
 			};
 			
-			var showUploadFilePath = function(filePath){
-				document.getElementById("upload_file_path").innerText = filePath;
+			var showUploadFilePath = function(file){
+				var filePath = "";
+				if(file){
+					filePath = '<a href="' + file.path + '">' + file.name + '</a>';
+				}
+				document.getElementById("upload_file_path").innerHTML = filePath;
 			};
 		}
 	</script>
