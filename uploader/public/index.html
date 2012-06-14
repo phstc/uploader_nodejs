@@ -7,24 +7,35 @@
 	<!-- Date: 2012-06-12 -->
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
-	  var socket;
 		window.onload = function(){
-		  socket = io.connect(window.location.protocol + '//' + window.location.host + '/');
+		  var socket = io.connect(window.location.protocol + '//' + window.location.host + '/');
 		  socket.on('connect', function () {
 		    document.getElementById("form_upload").action = "/upload?socketid=" + socket.socket.sessionid;
 		    socket.on('percentage', function (percentage) {
-					document.getElementById("upload_percentage").innerText = percentage + "%";
+					showUploadPercentage(percentage);
 		    });
 		    socket.on('uploaded_file', function (filePath) {
-					document.getElementById("upload_file_path").innerText = filePath;
+					showUploadFilePath(filePath);
 		    });
 		  });
+			document.getElementById("form_upload").onsubmit = function(){
+				showUploadPercentage(0);
+				showUploadFilePath('');
+				return true;
+			}
+			var showUploadPercentage = function(percentage){
+				document.getElementById("upload_percentage").innerText = percentage + "%";
+			};
+			
+			var showUploadFilePath = function(filePath){
+				document.getElementById("upload_file_path").innerText = filePath;
+			};
 		}
 	</script>
 </head>
 <body>
 	<h1>Super Upload</h1>
-	<form action="/upload" enctype="multipart/form-data" method="post" id="form_upload" target="iframe_upload">
+	<form action="/" enctype="multipart/form-data" method="post" id="form_upload" target="iframe_upload">
 		<p>
 			<label>File</label><br/>
 			<input type="file" name="upload" id="upload" multiple="multiple"><br>
