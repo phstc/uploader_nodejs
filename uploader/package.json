@@ -1,0 +1,8 @@
+{
+    "name": "uploader"
+  , "version": "0.0.1"
+  , "private": true
+  , "dependencies": {
+      "formidable": "1.0.9"
+  }
+}
