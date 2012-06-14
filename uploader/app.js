@@ -54,9 +54,12 @@ function upload(req, res){
 	});
 }
 
+/*
+It was needed for nginx, I'm not using nginx for now..
 io.configure(function () {
   io.set("transports", ["xhr-polling"]);
   io.set("polling duration", 10);
 });
+*/
 
 io.sockets.on('connection', function (socket) {});
