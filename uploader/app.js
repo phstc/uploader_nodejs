@@ -4,7 +4,9 @@ var app = require('http').createServer(handler)
 	, fs = require('fs')
 	, url = require('url');
 
-app.listen(8181);
+var port = (process.argv[2] == 'production') ? 80 : 8080;
+
+app.listen(port);
 
 function handler (req, res) {
 	if (req.url.match(/^\/upload.+/) && req.method.toLowerCase() == 'post') {
@@ -21,7 +23,7 @@ function sendSocketMessage(socketid, room, message){
 }
 
 function upload(req, res){
-	var form = new formidable.IncomingForm();	
+	var form = new formidable.IncomingForm();
 
 	form.uploadDir = __dirname + '/uploaded_files';
 
@@ -49,9 +51,9 @@ function index(req, res){
 	});
 }
 
-io.configure(function () { 
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
+io.configure(function () {
+  io.set("transports", ["xhr-polling"]);
+  io.set("polling duration", 10);
 });
 
 io.sockets.on('connection', function (socket) {});
