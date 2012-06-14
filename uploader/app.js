@@ -1,24 +1,52 @@
-var formidable = require('formidable')
-   , http = require('http')
-   , util = require('util')
-   , fs = require('fs');
+var app = require('http').createServer(handler)
+	, io = require('socket.io').listen(app)
+	, formidable = require('formidable')
+	, fs = require('fs')
+	, url = require('url');
 
-http.createServer(function(req, res) {
-	var form = new formidable.IncomingForm();
-	
-	form.uploadDir = __dirname + '/uploaded_files/';
-	
+app.listen(8181);
+
+function handler (req, res) {
+	if (req.url.match(/^\/upload.+/) && req.method.toLowerCase() == 'post') {
+		upload(req, res);
+		return;
+	}
+	index(req, res);
+}
+
+function sendSocketMessage(socketid, room, message){
+	if(socketid){
+		io.sockets.socket(socketid).emit(room, message);
+	}
+}
+
+function upload(req, res){
+	var form = new formidable.IncomingForm();	
+
+	form.uploadDir = __dirname + '/uploaded_files';
+
 	form.parse(req, function(err, fields, files) {
 		res.writeHead(200, {'Content-type': 'text/plain'});
-		res.end('received upload');
-	 });
-	
+		res.end('upload received');
+	});
+
 	form.on('file', function(field, file) {
-	    fs.rename(file.path, form.uploadDir + '/' + file.name);
-	})
-	
+		fs.rename(file.path, form.uploadDir + '/' + file.name);
+		sendSocketMessage(url_parts.query.socketid, 'uploaded_file', '/uploaded_files/' + '/' + file.name);
+	});
+
+	var url_parts = url.parse(req.url, true);
+
 	form.addListener('progress' , function(bytesReceived, bytesExpected){
 		var percentage = parseInt((bytesReceived * 100) / bytesExpected, 10);
-		console.log(percentage);
-	});	
-}).listen(8181);
+		sendSocketMessage(url_parts.query.socketid, 'percentage', percentage);
+	});
+}
+
+function index(req, res){
+	fs.readFile(__dirname + '/public/index.html', 'utf8', function(err, text){
+		res.end(text);
+	});
+}
+
+io.sockets.on('connection', function (socket) {});

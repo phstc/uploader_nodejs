@@ -5,17 +5,35 @@
 	<meta name="generator" content="TextMate http://macromates.com/">
 	<meta name="author" content="Pablo">
 	<!-- Date: 2012-06-12 -->
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+	  var socket;
+		window.onload = function(){
+		  socket = io.connect('http://localhost');
+		  socket.on('connect', function () {
+		    document.getElementById("form_upload").action = "/upload?socketid=" + socket.socket.sessionid;
+		    socket.on('percentage', function (percentage) {
+					document.getElementById("upload_percentage").innerText = percentage + "%";
+		    });
+		    socket.on('uploaded_file', function (filePath) {
+					document.getElementById("upload_file_path").innerText = filePath;
+		    });
+		  });
+		}
+	</script>
 </head>
 <body>
 	<h1>Super Upload</h1>
-	<form action="http://localhost:8282" enctype="multipart/form-data" method="post" id="form_upload">
+	<form action="/upload" enctype="multipart/form-data" method="post" id="form_upload" target="iframe_upload">
 		<p>
 			<label>File</label><br/>
 			<input type="file" name="upload" id="upload" multiple="multiple"><br>
+			<span id="upload_percentage"></span>&nbsp;<span id="upload_file_path"></span>
 		</p>
 		<p>
 			<input type="submit" value="Upload">
 		</p>
 	</form>
+	<iframe id="iframe_upload"></iframe>
 </body>
 </html>
