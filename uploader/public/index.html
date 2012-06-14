@@ -9,7 +9,7 @@
 	<script>
 	  var socket;
 		window.onload = function(){
-		  socket = io.connect('http://localhost');
+		  socket = io.connect(window.location.protocol + '//' + window.location.host + '/');
 		  socket.on('connect', function () {
 		    document.getElementById("form_upload").action = "/upload?socketid=" + socket.socket.sessionid;
 		    socket.on('percentage', function (percentage) {
