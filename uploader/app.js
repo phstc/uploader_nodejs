@@ -17,12 +17,7 @@ function handler (req, res) {
 		upload(req, res);
 		return;
 	}
-	fileServer.serve(req, res, function (err, result) {
-		if (err) {
-			res.writeHead(err.status, err.headers);
-			res.end();
-		}
-	});
+	fileServer.serve(req, res);
 }
 
 function createSendSocketMessage(socketid){
@@ -59,5 +54,3 @@ function upload(req, res){
 		currentSendSocketMessage('percentage', percentage);
 	});
 }
-
-io.sockets.on('connection', function (socket) {});
