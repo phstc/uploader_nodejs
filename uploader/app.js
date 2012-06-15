@@ -13,7 +13,7 @@ app.listen(port);
 var fileServer = new(static.Server)('./public');
 
 function handler (req, res) {
-	if (req.url.match(/^\/upload.+/) && req.method.toLowerCase() == 'post') {
+	if (req.url.match(/^\/upload\?socketid=.+/) && req.method.toLowerCase() == 'post') {
 		upload(req, res);
 		return;
 	}
@@ -25,10 +25,14 @@ function handler (req, res) {
 	});
 }
 
+function createSendSocketMessage(socketid){
+	return function(room, message){
+		sendSocketMessage(socketid, room, message);
+	};
+}
+
 function sendSocketMessage(socketid, room, message){
-	if(socketid){
-		io.sockets.socket(socketid).emit(room, message);
-	}
+	io.sockets.socket(socketid).emit(room, message);
 }
 
 function upload(req, res){
@@ -40,26 +44,20 @@ function upload(req, res){
 		res.writeHead(200, {'Content-type': 'text/plain'});
 		res.end('upload received');
 	});
-
-	form.on('file', function(field, file) {
-		fs.rename(file.path, form.uploadDir + '/' + file.name);
-		sendSocketMessage(url_parts.query.socketid, 'uploaded_file', {path: '/uploaded_files/' + file.name, name: file.name});
-	});
-
+	
 	var url_parts = url.parse(req.url, true);
 
+	var currentSendSocketMessage = createSendSocketMessage(url_parts.query.socketid);
+	
+	form.on('file', function(field, file) {
+		fs.rename(file.path, form.uploadDir + '/' + file.name);
+		currentSendSocketMessage('uploaded_file', {path: '/uploaded_files/' + file.name, name: file.name});
+	});
+	
 	form.addListener('progress' , function(bytesReceived, bytesExpected){
 		var percentage = parseInt((bytesReceived * 100) / bytesExpected, 10);
-		sendSocketMessage(url_parts.query.socketid, 'percentage', percentage);
+		currentSendSocketMessage('percentage', percentage);
 	});
 }
-
-/*
-It was needed for nginx, I'm not using nginx for now..
-io.configure(function () {
-  io.set("transports", ["xhr-polling"]);
-  io.set("polling duration", 10);
-});
-*/
 
 io.sockets.on('connection', function (socket) {});
