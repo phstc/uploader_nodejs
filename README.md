@@ -1,0 +1,1 @@
+# The documentation is available at [github.com/phstc/uploader_rails](https://github.com/phstc/uploader_rails).
