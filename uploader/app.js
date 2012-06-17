@@ -51,6 +51,6 @@ function upload(req, res){
 	
 	form.addListener('progress' , function(bytesReceived, bytesExpected){
 		var percentage = parseInt((bytesReceived * 100) / bytesExpected, 10);
-		currentSendSocketMessage('percentage', percentage);
+		currentSendSocketMessage('upload_percentage', percentage);
 	});
 }
