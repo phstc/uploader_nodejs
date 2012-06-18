@@ -30,8 +30,9 @@
 		    });
 		  });
 			$("form_upload").onsubmit = function(){
-				showUploadPercentage(0);
-				showUploadFilePath();
+				$("upload_error").innerText = ""
+				$("upload_percentage").innerText = ""
+				$("upload_file_path").innerText = ""
 				return true;
 			};
 			
