@@ -3,9 +3,9 @@ var app = require('http').createServer(handler)
 	, formidable = require('formidable')
 	, fs = require('fs')
 	, url = require('url')
-	, static = require('node-static');
+	, static = require('node-static')
+	, uploadCredential = require('./upload_credential');
 	
-
 var port = (process.argv[2] == 'production') ? 80 : 8080;
 
 app.listen(port);
@@ -13,8 +13,9 @@ app.listen(port);
 var fileServer = new(static.Server)('./public');
 
 function handler (req, res) {
-	if (req.url.match(/^\/upload\?socketid=.+/) && req.method.toLowerCase() == 'post') {
-		upload(req, res);
+	req.query = url.parse(req.url, true).query;
+	if (isUploadRequest(req)) {
+		createUploadHandler(isValidCredential, authorizedUpload, unauthorizedUpload)(req, res);
 		return;
 	}
 	fileServer.serve(req, res);
@@ -30,7 +31,32 @@ function sendSocketMessage(socketid, room, message){
 	io.sockets.socket(socketid).emit(room, message);
 }
 
-function upload(req, res){
+function isValidCredential(req){
+	return uploadCredential.isValid(req.query.security_hash, req.query.timestamp);
+}
+
+function isUploadRequest(req){
+	return req.url.match(/^\/upload\?socketid=.+&security_hash=.+&timestamp=.+/) 
+		&& req.method.toLowerCase() == 'post';
+}
+
+function createUploadHandler(validator, funcAuthorized, funcUnauthorized){
+	return function(req, res){
+		if(validator(req)){
+			funcAuthorized(req, res);
+		} else {
+			funcUnauthorized(req, res);
+		}
+	}
+};
+
+function unauthorizedUpload(req, res){
+	createSendSocketMessage(req.query.socketid)('upload_error', 'invalid credential');
+	res.writeHead(401, {'Content-type': 'text/plain'});
+	res.end('invalid credential');
+}
+
+function authorizedUpload(req, res){
 	var form = new formidable.IncomingForm();
 
 	form.uploadDir = __dirname + '/public/uploaded_files';
@@ -40,9 +66,7 @@ function upload(req, res){
 		res.end('upload received');
 	});
 	
-	var url_parts = url.parse(req.url, true);
-
-	var currentSendSocketMessage = createSendSocketMessage(url_parts.query.socketid);
+	var currentSendSocketMessage = createSendSocketMessage(req.query.socketid);
 	
 	form.on('file', function(field, file) {
 		fs.rename(file.path, form.uploadDir + '/' + file.name);

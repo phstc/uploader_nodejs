@@ -8,23 +8,39 @@
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
 		window.onload = function(){
+			
+			var $ = function(elemId){
+				return document.getElementById(elemId);
+			}
+			
 		  var socket = io.connect(window.location.protocol + '//' + window.location.host + '/');
 		  socket.on('connect', function () {
-		    document.getElementById("form_upload").action = "/upload?socketid=" + socket.socket.sessionid;
-		    socket.on('percentage', function (percentage) {
+				var formAction = "/upload?socketid=" + socket.socket.sessionid;
+				formAction += '&security_hash=bc1ce6e50b3f657bed6563077d0a51b1';
+				formAction += '&timestamp=1339984493';
+		    $("form_upload").action = formAction;
+		    socket.on('upload_error', function (percentage) {
+					showUploadError(percentage);
+		    });
+		    socket.on('upload_percentage', function (percentage) {
 					showUploadPercentage(percentage);
 		    });
 		    socket.on('uploaded_file', function (file) {
 					showUploadFilePath(file);
 		    });
 		  });
-			document.getElementById("form_upload").onsubmit = function(){
+			$("form_upload").onsubmit = function(){
 				showUploadPercentage(0);
 				showUploadFilePath();
 				return true;
-			}
+			};
+			
+			var showUploadError = function(message){
+				$("upload_error").innerText = message;
+			};
+			
 			var showUploadPercentage = function(percentage){
-				document.getElementById("upload_percentage").innerText = percentage + "%";
+				$("upload_percentage").innerText = percentage + "%";
 			};
 			
 			var showUploadFilePath = function(file){
@@ -32,7 +48,7 @@
 				if(file){
 					filePath = '<a href="' + file.path + '">' + file.name + '</a>';
 				}
-				document.getElementById("upload_file_path").innerHTML = filePath;
+				$("upload_file_path").innerHTML = filePath;
 			};
 		}
 	</script>
@@ -43,7 +59,7 @@
 		<p>
 			<label>File</label><br/>
 			<input type="file" name="upload" id="upload"><br>
-			<span id="upload_percentage"></span>&nbsp;<span id="upload_file_path"></span>
+			<span id="upload_error"></span>&nbsp;<span id="upload_percentage"></span>&nbsp;<span id="upload_file_path"></span>
 		</p>
 		<p>
 			<input type="submit" value="Upload">
