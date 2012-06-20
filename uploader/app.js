@@ -40,9 +40,9 @@ function isUploadRequest(req){
 		&& req.method.toLowerCase() == 'post';
 }
 
-function createUploadHandler(validator, funcAuthorized, funcUnauthorized){
+function createUploadHandler(credentialValidator, funcAuthorized, funcUnauthorized){
 	return function(req, res){
-		if(validator(req)){
+		if(credentialValidator(req)){
 			funcAuthorized(req, res);
 		} else {
 			funcUnauthorized(req, res);
