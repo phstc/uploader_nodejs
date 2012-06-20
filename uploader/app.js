@@ -6,9 +6,9 @@ var app = require('http').createServer(handler)
 	, static = require('node-static')
 	, uploadCredential = require('./upload_credential');
 	
-var port = (process.argv[2] == 'production') ? 80 : 8080;
+var PORT = (process.argv[2] == 'production') ? 80 : 8080;
 
-app.listen(port);
+app.listen(PORT);
 
 var fileServer = new(static.Server)('./public');
 
