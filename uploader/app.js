@@ -24,7 +24,7 @@ function handler (req, res) {
 function createSendSocketMessage(socketid){
 	return function(room, message){
 		sendSocketMessage(socketid, room, message);
-	};
+	}
 }
 
 function sendSocketMessage(socketid, room, message){
@@ -48,7 +48,7 @@ function createUploadHandler(credentialValidator, funcAuthorized, funcUnauthoriz
 			funcUnauthorized(req, res);
 		}
 	}
-};
+}
 
 function unauthorizedUpload(req, res){
 	createSendSocketMessage(req.query.socketid)('upload_error', 'invalid credential');
