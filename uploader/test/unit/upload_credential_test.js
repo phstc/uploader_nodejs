@@ -1,6 +1,4 @@
-require('should');
-
-var uploadCredential = require('../upload_credential');
+var uploadCredential = require('../../lib/upload_credential');
 
 describe('Upload Credential', function(){
   describe('#create', function(){

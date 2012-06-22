@@ -4,7 +4,7 @@ var app = require('http').createServer(handler)
 	, fs = require('fs')
 	, url = require('url')
 	, static = require('node-static')
-	, uploadCredential = require('./upload_credential');
+	, uploadCredential = require('./lib/upload_credential');
 	
 var PORT = (process.argv[2] == 'production') ? 80 : 8080;
 

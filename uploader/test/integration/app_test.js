@@ -1,7 +1,7 @@
-var http = require('http'),
-	request = require('superagent');
-require('should')
-require('../app')
+var http = require('http')
+	, request = require('superagent');
+	
+require('../../app');
 
 describe('http requests', function(){
 	describe('POST /upload', function(){
