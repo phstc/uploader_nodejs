@@ -1,5 +1,4 @@
-var http = require('http')
-	, request = require('superagent');
+var request = require('superagent');
 	
 require('../../app');
 
