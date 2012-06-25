@@ -22,11 +22,11 @@ See a full example at [github.com/phstc/uploader_nodejs/blob/master/uploader/pub
 
 The Uploader will update the status to client in three channels: ```upload_percentage```, ```uploaded_file``` and ```upload_error```.
 
-   'uploaded_file', {path: file.path, name: file.name}
-
-   'upload_percentage', percentage
-
-   'upload_error', 'invalid credential'
+    'uploaded_file', {path: file.path, name: file.name}
+    
+    'upload_percentage', percentage
+    
+    'upload_error', 'invalid credential'
 
 ##Credential
 
