@@ -43,3 +43,4 @@ The ```security_hash``` is ```md5(SECRET_KEY + timestamp)```.
 ###Test suite
 
     $ make test
+
