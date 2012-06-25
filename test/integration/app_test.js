@@ -27,12 +27,12 @@ describe('http requests', function(){
 		});
 	});
 	describe('Static content', function(){
-		describe('GET /hello.txt', function(){
-			it('should return the contents of hello.txt', function(done){
+		describe('GET /', function(){
+			it('should return the contents of index.html', function(done){
 				request
-					.get('http://localhost:8080/hello.txt')
+					.get('http://localhost:8080/')
 					.end(function(res){
-					  res.text.should.equal('hello');
+					  res.text.should.include('Super Upload');
 						done();
 					});
 			});
